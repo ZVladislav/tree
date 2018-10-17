@@ -188,7 +188,7 @@ int main()
 	int avgvalue = 0;
 	count = 0;
 	avg(&tree, &avgvalue, &count);
-	cout << avgvalue<< " " << count<< " "<< (float)avgvalue/(float)count<<" HELLO! MY FRIEND"<< endl;
+	cout << avgvalue<< " " << count<< " "<< (float)avgvalue/(float)count<< endl;
 	deletetree(&tree);
 }
 
