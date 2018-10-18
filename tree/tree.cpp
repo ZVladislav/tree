@@ -2,10 +2,6 @@
 //
 
 #include "pch.h"
-#include <iostream>
-#include <string>
-#include <fstream>
-using namespace std;
 
 struct tnode
 {
@@ -129,14 +125,19 @@ void rec_avg(tnode **tree, int *avgweight, int *count)
 void notrec_avg(tnode *tree, int *avgweight, int *count, int value)
 {
 	int quantity = value;
-	tnode *stack = new tnode[quantity];
-	int top; // вершина стека
-	top = 0;
-	stack[0] = *tree;
-	while (top > -1)
+	stack<tnode*> st;
+	st.push(tree);
+	while (st.empty())
 	{
-		*tree = stack[top];		
-		top--;
+		tnode next = st.top;		
+
+		bool finishedSubtrees = (next.right == tree || next.left == tree);
+		bool isLeaf = (next.right == NULL || next.left == NULL);
+
+		if (finishedSubtrees || isLeaf)
+		{
+			sta
+		}
 		if (tree->left == NULL && tree->right == NULL)
 		{
 			*avgweight += tree->weight;
@@ -151,28 +152,20 @@ void notrec_avg(tnode *tree, int *avgweight, int *count, int value)
 			top++;
 		}
 	}
-
-
 }
-
-
-
-
-
-
 int main()
 {
 	tnode *tree = NULL;
 	int * wes = NULL;
 	int value = 0;
 	int level = 0;
-	int count;
+	int quantity;
 
 	ifstream in("C:\\1\\tree.txt");
-	in >> count;
+	in >> quantity;
 	string str;
 
-	for (int i = 0; i < count; i++)
+	for (int i = 0; i < quantity; i++)
 	{
 		in >> str >> value;
 		if (level < (int)str.size())
@@ -186,8 +179,9 @@ int main()
 
 	print_tree(&tree, 0);
 	int avgvalue = 0;
-	count = 0;
-	avg(&tree, &avgvalue, &count);
+	int count = 0;
+	//rec_avg(&tree, &avgvalue, &count);
+	notrec_avg(tree, &avgvalue, &count, quantity);
 	cout << avgvalue<< " " << count<< " "<< (float)avgvalue/(float)count<< endl;
 	deletetree(&tree);
 }
