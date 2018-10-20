@@ -2,15 +2,15 @@
 // это изменение)
 
 #include "pch.h"
-
+//структура, описывающая узел дерева
 struct tnode
 {
-	int value = 0;
-	int weight = 0;
-	tnode * left = NULL;
-	tnode * right = NULL;
+	int value = 0;			
+	int weight = 0;			//вес ветви
+	tnode * left = NULL;	//левый потомок
+	tnode * right = NULL;	//правый потомок
 };
-
+//удаление дерева
 void deletetree(tnode **tree)
 {
 	if ((*tree) != NULL)
@@ -21,16 +21,18 @@ void deletetree(tnode **tree)
 		*tree = NULL;
 	}
 }
-// функция для добавления элемента в дерево
-void set_node(tnode **tree, int value, int *weight = NULL, int level = 0)
+//вспомогательная функция для добавления элемента в дерево
+//вызывается из функции pass
+void set_node(tnode **tree, int value, int *weight = NULL)
 {
 	if (*tree == NULL)
 	{
 		(*tree) = new tnode;
 		(*tree)->value = value;
-		if (weight == NULL)
+		//добовление веса всей ветви в узел 
+		if (weight == NULL) 
 		{
-			(*tree)->weight = value;
+			(*tree)->weight = value; 
 		}
 		else
 		{
@@ -38,6 +40,7 @@ void set_node(tnode **tree, int value, int *weight = NULL, int level = 0)
 		}
 	}
 }
+//функция прохода по дереву
 void pass(tnode **tree, string key, int value)
 {
 	tnode ** temptree = tree;
@@ -49,7 +52,7 @@ void pass(tnode **tree, string key, int value)
 		{
 			if ((*temptree)->right == NULL)
 			{
-				set_node(&(*temptree)->right, value, &(*temptree)->weight, i);
+				set_node(&(*temptree)->right, value, &(*temptree)->weight);
 			}
 			else
 			{
@@ -61,7 +64,7 @@ void pass(tnode **tree, string key, int value)
 		{
 			if ((*temptree)->left == NULL)
 			{
-				set_node(&(*temptree)->left, value, &(*temptree)->weight, i);
+				set_node(&(*temptree)->left, value, &(*temptree)->weight);
 			}
 			else
 			{
@@ -71,6 +74,7 @@ void pass(tnode **tree, string key, int value)
 		}
 	}
 }
+//печать дерева
 void print_tree(tnode **tree, int level, char znak = 196)
 {
 	if ((*tree)!=NULL)
@@ -82,26 +86,26 @@ void print_tree(tnode **tree, int level, char znak = 196)
 		{
 			for (int i = 0; i < level; i++)
 			{
-				std::cout << "    ";
+				cout << "    ";
 			}
-			std::cout << (char)218 << (char)196 << (char)196 << (char)196;
-			std::cout << ":" << std::endl;
+			cout << (char)218 << (char)196 << (char)196 << (char)196;
+			cout << ":" << endl;
 		}
 		for (int i = 0; i < level - 1; i++)
 		{
-			std::cout << "    ";
+			cout << "    ";
 		}
 		if(level > 0)
-		std::cout  << znak << (char)196 << (char)196 << (char)196;
-		std::cout << (*tree)->value <<"(" << (*tree)->weight << ")" << std::endl;
+		cout  << znak << (char)196 << (char)196 << (char)196;
+		cout << (*tree)->value  << endl;
 		if ((*tree)->left == NULL)
 		{
 			for (int i = 0; i < level; i++)
 			{
-				std::cout << "    ";
+				cout << "    ";
 			}
-			std::cout << (char)192 << (char)196 << (char)196 << (char)196 ;
-			std::cout << "*" << std::endl;
+			cout << (char)192 << (char)196 << (char)196 << (char)196 ;
+			cout << "*" << endl;
 		}
 		print_tree(&(*tree)->left, level + 1, 192);
 	
@@ -122,34 +126,29 @@ void rec_avg(tnode **tree, int *avgweight, int *count)
 	}
 }
 
-void notrec_avg(tnode *tree, int *avgweight, int *count, int value)
+void notrec_avg(tnode **tree, int *avgweight, int *count, int value)
 {
 	int quantity = value;
-	stack<tnode*> st;
+	stack<tnode**> st;
 	st.push(tree);
-	while (st.empty())
+	tnode **temp;
+	while (!st.empty())
 	{
-		tnode next = st.top;		
-
-		bool finishedSubtrees = (next.right == tree || next.left == tree);
-		bool isLeaf = (next.right == NULL || next.left == NULL);
-
-		if (finishedSubtrees || isLeaf)
+		temp = st.top();
+		st.pop();
+		if (((*temp)->right == NULL && (*temp)->left == NULL))
 		{
-			sta
+			*avgweight += (*temp)->weight;
+			*count += 1;
+			
 		}
-		if (tree->left == NULL && tree->right == NULL)
+		if ((*temp)->right != NULL)
 		{
-			*avgweight += tree->weight;
+			st.push(&(*temp)->right);
 		}
-		if (tree == NULL)
-			return;
-		else
+		if ((*temp)->left != NULL)
 		{
-			stack[top + 1] = *tree->left;
-			stack[top + 2] = *tree->right;
-			top++;
-			top++;
+			st.push(&(*temp)->left);
 		}
 	}
 }
@@ -159,13 +158,12 @@ int main()
 	int * wes = NULL;
 	int value = 0;
 	int level = 0;
-	int quantity;
+	int quantity= 0;
 
 	ifstream in("C:\\1\\tree.txt");
-	in >> quantity;
 	string str;
 
-	for (int i = 0; i < quantity; i++)
+	while (!in.eof())
 	{
 		in >> str >> value;
 		if (level < (int)str.size())
@@ -173,6 +171,7 @@ int main()
 			level = (int)str.size() - 1;
 		}
 		pass(&tree, str, value);
+		quantity++;
 	}
 	
 	in.close();
@@ -181,7 +180,7 @@ int main()
 	int avgvalue = 0;
 	int count = 0;
 	//rec_avg(&tree, &avgvalue, &count);
-	notrec_avg(tree, &avgvalue, &count, quantity);
+	notrec_avg(&tree, &avgvalue, &count, quantity);
 	cout << avgvalue<< " " << count<< " "<< (float)avgvalue/(float)count<< endl;
 	deletetree(&tree);
 }
